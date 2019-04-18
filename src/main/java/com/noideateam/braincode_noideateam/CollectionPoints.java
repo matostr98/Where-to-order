@@ -9,6 +9,7 @@ import javafx.util.Pair;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CollectionPoints {
@@ -80,6 +81,27 @@ public class CollectionPoints {
 
         return result.get(0);
 
+    }
+
+    public ArrayList<Pair<CollectionPoint, Double>> getThreeClosest(double X, double Y){
+
+        ArrayList<Pair<CollectionPoint, Double>> result= CollectionPoints.collectionPointsInRange(X, Y, 20);
+        Collections.sort(result, new Comparator<Pair<CollectionPoint, Double>>() {
+            @Override
+            public int compare(Pair<CollectionPoint, Double> o1, Pair<CollectionPoint, Double> o2) {
+
+                if (o1.getValue()>o2.getValue()) return 1;
+                else if (o1.getValue() == o2.getValue()) return 0;
+                else return -1;
+            }
+        });
+
+
+
+        return result
+                .stream()
+                .limit(3)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
 }

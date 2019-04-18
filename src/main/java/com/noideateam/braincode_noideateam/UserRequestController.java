@@ -3,6 +3,7 @@ package com.noideateam.braincode_noideateam;
 import com.noideateam.braincode_noideateam.generategeoindex.GenerateGeoIndex;
 import com.noideateam.braincode_noideateam.generategeoindex.opencagedata.ReturnGenerateGeoIndex;
 import com.noideateam.braincode_noideateam.restreturn.Location;
+import com.noideateam.braincode_noideateam.restreturn.LocationArray;
 import javafx.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,7 @@ public class UserRequestController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/request")
-    Location getWithoutDatabase(
+    LocationArray getWithoutDatabase(
             @RequestParam("chosen_street") String chosen_street,
             @RequestParam("chosen_city") String chosen_city,
             @RequestParam("chosen_zip") String chosen_zip
@@ -54,21 +55,52 @@ public class UserRequestController {
             );
         } else {
 
-            CollectionPoints collectionPoints = new CollectionPoints();
-            Pair<CollectionPoint, Double> closestPoint = collectionPoints.getOneClosest(tempUserChoice.getX(), tempUserChoice.getY());
 
-            return new Location(
-                    closestPoint.getKey().getName(),
-                    closestPoint.getValue(),
-                    true,
-                    closestPoint.getKey().getAddress(),
-                    closestPoint.getKey().getCity(),
-                    closestPoint.getKey().getZipCode(),
-                    closestPoint.getKey().getNotes(),
-                    closestPoint.getKey().getType(),
-                    closestPoint.getKey().getDeliveryHours()
-            );
+
+
+            CollectionPoints collectionPoints = new CollectionPoints();
+            ArrayList<Pair<CollectionPoint, Double>> threeClosest = collectionPoints.getThreeClosest(tempUserChoice.getX(), tempUserChoice.getY());
+
+//            for (Pair<CollectionPoint, Double> entry: threeClosest){
+//                System.out.println("entry.getKey() = " + entry.getKey().getName() + "entry.getValue() = " + entry.getValue());
+//            }
+
+
+            //Pair<CollectionPoint, Double> closestPoint = collectionPoints.getOneClosest(tempUserChoice.getX(), tempUserChoice.getY());
+
+            LocationArray result = new LocationArray();
+
+            for (Pair<CollectionPoint, Double> entry: threeClosest){
+                System.out.println("Name " + entry.getKey().getName() + "\tDistance " + entry.getValue());
+
+                result.add(
+                                entry.getKey().getName(),
+                                entry.getValue(),
+                                true,
+                                entry.getKey().getAddress(),
+                                entry.getKey().getCity(),
+                                entry.getKey().getZipCode(),
+                                entry.getKey().getNotes(),
+                                entry.getKey().getType(),
+                                entry.getKey().getDeliveryHours()
+                    );
+            }
+
+            return result;
+//            return new Location(
+//                    threeClosest.getKey().getName(),
+//                    threeClosest.getValue(),
+//                    true,
+//                    threeClosest.getKey().getAddress(),
+//                    threeClosest.getKey().getCity(),
+//                    threeClosest.getKey().getZipCode(),
+//                    threeClosest.getKey().getNotes(),
+//                    threeClosest.getKey().getType(),
+//                    threeClosest.getKey().getDeliveryHours()
+//            );
         }
+
+
     }
 
     @CrossOrigin(origins = "*")
