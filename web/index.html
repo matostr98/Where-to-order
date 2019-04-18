@@ -101,13 +101,23 @@ const getTest = async () => {
     
     const response = await fetch('http://localhost:8080/request/?chosen_street='+street+'&chosen_city='+city+'&chosen_zip='+zipcode);
     const myJson = await response.json(); //extract JSON from the http response
-    var str = '<h4 class="ui dividing header">Result</h4>';
+    var str = '<h4 class="ui dividing header">Result</h4>';  
     if(myJson.status == 404){
       str += `<div class="ui red basic label">
       Address not found
     </div>`
     }else{
-      switch(myJson.betterLocation.shopType){
+
+      //document.write('arrlen = ' + myJson.location[0].betterLocation.pointName);
+      // for (var loc in myJson.location){
+      //   document.write(loc.betterLocation.pointName)
+      // }
+
+      for (var i = 0; i< myJson.location.length; i++){
+
+      // }
+      // for (var loc in myJson.location){
+        switch(myJson.location[i].betterLocation.shopType){
           case "UPS": color = "brown"; break;
           case "ZABKA": color = "olive"; break;
           case "RUCH": color = "green"; break;
@@ -118,16 +128,26 @@ const getTest = async () => {
 
         }
       str += `<a class="ui ${color} image label main-label">
-      <img src="images/icons/ico_${myJson.betterLocation.shopType}.png">
-      ${myJson.betterLocation.street} <span style="display:inline-block; width: 10px;"></span>  ${myJson.betterLocation.city} <span style="display:inline-block; width: 10px;"></span> ${myJson.betterLocation.zip} 
-      <div class="detail">${myJson.betterLocation.distance.toFixed(2)}km</div>
+      <img src="images/icons/ico_${myJson.location[i].betterLocation.shopType}.png">
+      ${myJson.location[i].betterLocation.pointName} <span style="display:inline-bmyJson.location[i]k; width: 10px;"></span>
+      ${myJson.location[i].betterLocation.street} <span style="display:inline-bmyJson.location[i]k; width: 10px;"></span> 
+      ${myJson.location[i].betterLocation.city} <span style="display:inline-bmyJson.location[i]k; width: 10px;"></span>
+      ${myJson.location[i].betterLocation.zip} <div class="detail">
+      ${myJson.location[i].betterLocation.distance.toFixed(2)}km</div>
       </a>
+      
     `
-    if(myJson.betterLocation.notes != ""){
+    if(myJson.location[i].betterLocation.notes != ""){
       str += `<div class="ui left pointing blue basic label">
-      ${myJson.betterLocation.notes}
-    </div>`
+      ${myJson.location[i].betterLocation.notes}
+    </div><br>`
+    } else {
+      str += `<br>`
     }
+      }
+
+
+      
     }
         document.getElementById("result").innerHTML = str;
     

@@ -18,8 +18,10 @@ import java.util.Optional;
 @RestController
 public class UserRequestController {
     private final UserRepository userRepository;
+    CollectionPoints collectionPoints = new CollectionPoints();
 
-    UserRequestController(UserRepository repository){
+    UserRequestController(UserRepository repository) throws IOException {
+
         this.userRepository = repository;
     }
 
@@ -45,7 +47,7 @@ public class UserRequestController {
             @RequestParam("chosen_street") String chosen_street,
             @RequestParam("chosen_city") String chosen_city,
             @RequestParam("chosen_zip") String chosen_zip
-    ) throws IOException {
+    )  {
         GenerateGeoIndex ggi = new GenerateGeoIndex(chosen_street, chosen_city, chosen_zip);
         ReturnGenerateGeoIndex tempUserChoice = ggi.generate();
 
@@ -58,7 +60,7 @@ public class UserRequestController {
 
 
 
-            CollectionPoints collectionPoints = new CollectionPoints();
+
             ArrayList<Pair<CollectionPoint, Double>> threeClosest = collectionPoints.getThreeClosest(tempUserChoice.getX(), tempUserChoice.getY());
 
 //            for (Pair<CollectionPoint, Double> entry: threeClosest){

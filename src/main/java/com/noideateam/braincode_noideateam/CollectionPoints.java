@@ -85,18 +85,23 @@ public class CollectionPoints {
 
     public ArrayList<Pair<CollectionPoint, Double>> getThreeClosest(double X, double Y){
 
-        ArrayList<Pair<CollectionPoint, Double>> result= CollectionPoints.collectionPointsInRange(X, Y, 20);
+        ArrayList<Pair<CollectionPoint, Double>> result= new ArrayList<>();
+        result= CollectionPoints.collectionPointsInRange(X, Y, 10);
+        System.out.println("\n\n");
+        for (Pair<CollectionPoint, Double> pair: result) {
+            System.out.println("Name: " + pair.getKey().getName() + "\tDistance" + pair.getValue());
+        }
+        System.out.println("\n\n");
+
         Collections.sort(result, new Comparator<Pair<CollectionPoint, Double>>() {
             @Override
             public int compare(Pair<CollectionPoint, Double> o1, Pair<CollectionPoint, Double> o2) {
 
                 if (o1.getValue()>o2.getValue()) return 1;
-                else if (o1.getValue() == o2.getValue()) return 0;
+                //else if (o1.getValue() == o2.getValue()) return 0;
                 else return -1;
             }
         });
-
-
 
         return result
                 .stream()
