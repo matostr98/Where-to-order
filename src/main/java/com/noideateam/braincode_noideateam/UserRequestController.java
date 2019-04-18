@@ -3,11 +3,13 @@ package com.noideateam.braincode_noideateam;
 import com.noideateam.braincode_noideateam.generategeoindex.GenerateGeoIndex;
 import com.noideateam.braincode_noideateam.generategeoindex.opencagedata.ReturnGenerateGeoIndex;
 import com.noideateam.braincode_noideateam.restreturn.Location;
+import javafx.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,18 +55,18 @@ public class UserRequestController {
         } else {
 
             CollectionPoints collectionPoints = new CollectionPoints();
-            Optional<Map.Entry<CollectionPoint, Double>> closestPoint = collectionPoints.getClosest(tempUserChoice.getX(), tempUserChoice.getY());
+            Pair<CollectionPoint, Double> closestPoint = collectionPoints.getOneClosest(tempUserChoice.getX(), tempUserChoice.getY());
 
             return new Location(
-                    closestPoint.get().getKey().getName(),
-                    closestPoint.get().getValue(),
+                    closestPoint.getKey().getName(),
+                    closestPoint.getValue(),
                     true,
-                    closestPoint.get().getKey().getAddress(),
-                    closestPoint.get().getKey().getCity(),
-                    closestPoint.get().getKey().getZipCode(),
-                    closestPoint.get().getKey().getNotes(),
-                    closestPoint.get().getKey().getType(),
-                    closestPoint.get().getKey().getDeliveryHours()
+                    closestPoint.getKey().getAddress(),
+                    closestPoint.getKey().getCity(),
+                    closestPoint.getKey().getZipCode(),
+                    closestPoint.getKey().getNotes(),
+                    closestPoint.getKey().getType(),
+                    closestPoint.getKey().getDeliveryHours()
             );
         }
     }

@@ -4,6 +4,8 @@ import com.javadocmd.simplelatlng.LatLng;
 import com.javadocmd.simplelatlng.LatLngTool;
 import com.javadocmd.simplelatlng.util.LengthUnit;
 import com.opencsv.CSVReader;
+import javafx.util.Pair;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -26,16 +28,18 @@ public class CollectionPoints {
         }
     }
 
-    static Map<CollectionPoint, Double> collectionPointsDistanceToPoint(double x, double y) {
-        Map<CollectionPoint, Double> result = new HashMap<>();
+    public static ArrayList<Pair<CollectionPoint, Double>> collectionPointsDistanceToPoint(double x, double y){
+        ArrayList<Pair<CollectionPoint, Double>> result = new ArrayList<>();
         LatLng sourcePoint = new LatLng(x, y);
-        for (CollectionPoint e : collectionPoints) {
-            LatLng targetPoint = new LatLng(e.getLongitude(), e.getLatitude());
+        for (CollectionPoint cp: collectionPoints){
+            LatLng targetPoint = new LatLng(cp.getLongitude(), cp.getLatitude());
             double distance = LatLngTool.distance(sourcePoint, targetPoint, LengthUnit.KILOMETER);
-            result.put(e, distance);
+            // Pair<CollectionPoint, Double> ret = new Pair<CollectionPoint, Double>(cp, distance);
+            result.add(new Pair<>(cp, distance));
         }
         return result;
     }
+
 
     public double getDistance(double sourceX, double sourceY, double tagetX, double targetY ){
         LatLng sourcePoint = new LatLng(sourceX, sourceY);
@@ -44,37 +48,38 @@ public class CollectionPoints {
         return LatLngTool.distance(sourcePoint, targetPoint, LengthUnit.KILOMETER);
     }
 
-    public static Map<CollectionPoint, Double> collectionPointsInRange(double x, double y, float range){
-        Map<CollectionPoint, Double> distances = collectionPointsDistanceToPoint(x, y);
-        Map<CollectionPoint, Double> result = new HashMap<>();
-        distances.forEach((key, value) -> {
-            if(value < range){
-               result.put(key, value);
+    public static ArrayList<Pair<CollectionPoint, Double>> collectionPointsInRange(double x, double y, float range){
+        ArrayList<Pair<CollectionPoint, Double>> distances = collectionPointsDistanceToPoint(x, y);
+        ArrayList<Pair<CollectionPoint, Double>> result = new ArrayList<>();
+
+        for (Pair<CollectionPoint, Double> dist : distances){
+            if (dist.getValue()<range){
+                result.add(dist);
             }
-        });
+        }
         return result;
     }
 
-    public Optional<Map.Entry<CollectionPoint, Double>> getClosest(double X, double Y){
 
-        Map<CollectionPoint, Double> result= CollectionPoints.collectionPointsInRange(X, Y, 10);
-        double min = Collections.min(result.values());
-        System.out.println("Min: " + min);
 
-        Optional<Map.Entry<CollectionPoint, Double>> something = result.entrySet().stream().min(Map.Entry.comparingByValue());
 
-        System.out.println("cmp point: "+ something.get().getKey().getName() + "\t"+ something.get().getValue());
+    public Pair<CollectionPoint, Double> getOneClosest(double X, double Y){
 
-        return something;
+        ArrayList<Pair<CollectionPoint, Double>> result= CollectionPoints.collectionPointsInRange(X, Y, 10);
+        Collections.sort(result, new Comparator<Pair<CollectionPoint, Double>>() {
+            @Override
+            public int compare(Pair<CollectionPoint, Double> o1, Pair<CollectionPoint, Double> o2) {
 
-    }
+                if (o1.getValue()>o2.getValue()) return 1;
+                else if (o1.getValue() == o2.getValue()) return 0;
+                else return -1;
+            }
+        });
 
-    public Stream<CollectionPoint> keys(Map<CollectionPoint, Double> map, Double value){
-        return map
-                .entrySet()
-                .stream()
-                .filter(entry -> value.equals(entry.getValue()))
-                .map(Map.Entry::getKey);
+
+
+        return result.get(0);
+
     }
 
 }

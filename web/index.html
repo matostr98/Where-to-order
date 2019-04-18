@@ -99,7 +99,7 @@ const getTest = async () => {
     var street = document.getElementById("shipping[address]").value;
     street = street.replace(" ","+");
     
-    const response = await fetch('http://192.168.137.1:8080/request/?chosen_street='+street+'&chosen_city='+city+'&chosen_zip='+zipcode);
+    const response = await fetch('http://localhost:8080/request/?chosen_street='+street+'&chosen_city='+city+'&chosen_zip='+zipcode);
     const myJson = await response.json(); //extract JSON from the http response
     var str = '<h4 class="ui dividing header">Result</h4>';
     if(myJson.status == 404){
